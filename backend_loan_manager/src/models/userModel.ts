@@ -4,8 +4,9 @@ export interface IUserDetails extends Document {
     user: Types.ObjectId;
     contactNumber: string;
     address: string;
-    assignedOfficer: Types.ObjectId | null; 
+    assignedOfficer: Types.ObjectId | null;
     loans: {
+        loanApplication: Types.ObjectId;
         amount: number;
         status: 'pending' | 'approved' | 'rejected' | 'repaid';
         createdAt: Date;
@@ -29,6 +30,7 @@ const UserDetailsSchema: Schema<IUserDetails> = new Schema(
 
         loans: [
             {
+                loanApplication: { type: Schema.Types.ObjectId, ref: 'LoanApplication', required: true },
                 amount: { type: Number, required: true },
                 status: { type: String, enum: ['pending', 'approved', 'rejected', 'repaid'], default: 'pending' },
                 createdAt: { type: Date, default: Date.now },
