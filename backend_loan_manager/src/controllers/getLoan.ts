@@ -14,8 +14,8 @@ export const submitLoanApplication = async (req: Request, res: Response): Promis
             employmentAddress,
             agree
         } = req.body;
-
-        const userId = '67f2865993414f5c29fbd6d8'; // Replace with actual auth user id later
+        
+        const userId = (req as any).user.userId;
         if (!userId) {
             res.status(401).json({ message: 'Unauthorized: user ID not found.' });
             return;
@@ -51,7 +51,7 @@ export const submitLoanApplication = async (req: Request, res: Response): Promis
 
         // Update UserDetails with loan information
         const userDetails = await UserDetails.findOneAndUpdate(
-            { user: userId },
+            userId,
             {
                 $push: {
                     loans: {
@@ -72,10 +72,9 @@ export const submitLoanApplication = async (req: Request, res: Response): Promis
             return;
         }
 
-        // If an officer is assigned, add application to officer's verifiedApplications
         if (userDetails?.assignedOfficer) {
             await OfficerDetails.findOneAndUpdate(
-                { _id: userDetails.assignedOfficer }, // Updated query here
+                { _id: userDetails.assignedOfficer },
                 {
                     $push: {
                         verifiedApplications: {

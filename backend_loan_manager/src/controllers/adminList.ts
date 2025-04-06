@@ -2,8 +2,15 @@ import { UserDetails } from "../models/userModel";
 import { OfficerDetails } from "../models/verifierModel";
 import { LoanApplication } from "../models/loanApplicationModel";
 import { Request, Response } from "express";
+import { Admin } from "../models/adminModel";
 
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
+    const userId = (req as any).user.userId;
+    const checkAdmin = await Admin.findById(userId);
+    if (!checkAdmin) {
+        res.status(403).json({ message: "Unauthorized access" });
+        return;
+    }
     try {
         const users = await UserDetails.find(); 
         res.status(200).json({
@@ -17,6 +24,12 @@ export const getAllUsers = async (req: Request, res: Response): Promise<void> =>
 };
 
 export const getAllOfficers = async (req: Request, res: Response): Promise<void> => {
+    const userId = (req as any).user.userId;
+    const checkAdmin = await Admin.findById(userId);
+    if (!checkAdmin) {
+        res.status(403).json({ message: "Unauthorized access" });
+        return;
+    }
     try {
         const officers = await OfficerDetails.find(); 
         res.status(200).json({
@@ -30,6 +43,12 @@ export const getAllOfficers = async (req: Request, res: Response): Promise<void>
 };
 
 export const getAllLoanApplications = async (req: Request, res: Response): Promise<void> => {
+    const userId = (req as any).user.userId;
+    const checkAdmin = await Admin.findById(userId);
+    if (!checkAdmin) {
+        res.status(403).json({ message: "Unauthorized access" });
+        return;
+    }
     try {
         const applications = await LoanApplication.find();
         res.status(200).json({
@@ -44,6 +63,12 @@ export const getAllLoanApplications = async (req: Request, res: Response): Promi
 
 
 export const getMetrics = async (req: Request, res: Response): Promise<void> => {
+    const userId = (req as any).user.userId;
+    const checkAdmin = await Admin.findById(userId);
+    if (!checkAdmin) {
+        res.status(403).json({ message: "Unauthorized access" });
+        return;
+    }
     let totalUsers = 0;
     let totalOfficers = 0;
     let totalLoanApplications = 0;

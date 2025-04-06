@@ -37,6 +37,9 @@ export const signupUser = async (req: Request, res: Response): Promise<void> => 
 
         await UserDetails.create({
             user: newUser._id,
+            name,
+            email,
+            password: hashedPassword,
             contactNumber,
             address,
             assignedOfficer: null,

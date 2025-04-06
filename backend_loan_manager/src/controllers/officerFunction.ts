@@ -5,8 +5,8 @@ import { User } from '../models/user';
 import { UserDetails } from '../models/userModel';
 
 const updateOfficerMetrics = async (req: Request, res: Response): Promise<void> => {
-    const officerId = "67f2863e93414f5c29fbd6d4";
-
+    const officerId = (req as any).user.userId;
+    console.log(officerId, 'officer id from token');
     try {
         const officer = await OfficerDetails.findById(officerId).populate('verifiedApplications.application');
 
@@ -80,7 +80,8 @@ const updateOfficerMetrics = async (req: Request, res: Response): Promise<void> 
 export { updateOfficerMetrics };
 
 export const approveOrRejectLoan = async (req: Request, res: Response): Promise<void> => {
-    const { applicationId, action, officerId, note } = req.body;
+    const officerId = (req as any).user.userId;
+    const { applicationId, action, note } = req.body;
 
     if (!applicationId || !action || !officerId) {
         res.status(400).json({ message: 'Missing required fields (applicationId, action, or officerId).' });
@@ -175,3 +176,20 @@ export const approveOrRejectLoan = async (req: Request, res: Response): Promise<
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+export const getLoanApplicationsList = async (req: Request, res: Response): Promise<void> => {
+    const officerId = (req as any).user.userId; // req.user.userId
+    try {
+        const officer = await OfficerDetails.findById(officerId).populate('verifiedApplications.application');
+
+        if (!officer) {
+            res.status(404).json({ message: 'Officer not found' });
+            return;
+        }
+        const applications = officer.verifiedApplications.map((app) => app.application);
+        res.status(200).json({ applications });
+    } catch (error) {
+        console.error('Error fetching loan applications:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}

@@ -4,6 +4,8 @@ export interface IOfficerDetails extends Document {
     employeeId: string;
     name: string;
     contactNumber: string;
+    email: string;
+    password: string;
     designation: string;
     assignedUsers: Types.ObjectId[];
     verifiedApplications: {
@@ -28,6 +30,10 @@ const OfficerDetailsSchema: Schema<IOfficerDetails> = new Schema(
         employeeId: { type: String, required: true, unique: true },
         name: { type: String, required: true },
         contactNumber: { type: String, required: true },
+
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+
         designation: { type: String, default: 'Loan Officer' },
 
         assignedUsers: [{ type: Schema.Types.ObjectId, ref: 'UserDetails' }],

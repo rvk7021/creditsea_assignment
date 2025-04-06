@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { Admin } from '../models/adminModel';
-
+import { User } from '../models/user';
 const signupAdmin = async (req: Request, res: Response): Promise<void> => {
     try {
         const { username, password, name, email } = req.body;
@@ -19,7 +19,12 @@ const signupAdmin = async (req: Request, res: Response): Promise<void> => {
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-
+        const newUser = await User.create({
+            name,
+            email,
+            password: hashedPassword,
+            role: 'admin',
+        });
         const newAdmin = new Admin({
             username,
             password: hashedPassword,
