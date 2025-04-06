@@ -15,7 +15,7 @@ export const submitLoanApplication = async (req: Request, res: Response): Promis
             agree
         } = req.body;
 
-        const userId = '67f27133e1a99ed123dc1a36'; // Replace with actual auth user id later
+        const userId = '67f2865993414f5c29fbd6d8'; // Replace with actual auth user id later
         if (!userId) {
             res.status(401).json({ message: 'Unauthorized: user ID not found.' });
             return;

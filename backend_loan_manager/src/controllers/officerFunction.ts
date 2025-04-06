@@ -5,7 +5,7 @@ import { User } from '../models/user';
 import { UserDetails } from '../models/userModel';
 
 const updateOfficerMetrics = async (req: Request, res: Response): Promise<void> => {
-    const officerId = "67f258062f5d2e0148458a02";
+    const officerId = "67f2863e93414f5c29fbd6d4";
 
     try {
         const officer = await OfficerDetails.findById(officerId).populate('verifiedApplications.application');

@@ -4,7 +4,7 @@ import { UserDetails } from '../models/userModel';
 // Get all transactions of a user
 export const getTransactions = async (req: Request, res: Response): Promise<void> => {
     try {
-        const userId = '67f27133e1a99ed123dc1a36';    //(req as any).userId
+        const userId = '67f2865993414f5c29fbd6d8';    //(req as any).userId
 
         const userDetails = await UserDetails.findOne({ user: userId });
 
@@ -26,7 +26,7 @@ export const getTransactions = async (req: Request, res: Response): Promise<void
 // Get all deposits of a user
 export const getDeposits = async (req: Request, res: Response): Promise<void> => {
     try {
-        const userId = '67f27133e1a99ed123dc1a36';    //(req as any).userId
+        const userId = '67f2865993414f5c29fbd6d8';    //(req as any).userId
 
         const userDetails = await UserDetails.findOne({ user: userId });
         if (!userDetails) {
@@ -47,7 +47,7 @@ export const getDeposits = async (req: Request, res: Response): Promise<void> =>
 // Fetch all loan applications from the user's record
 export const getLoanApplications = async (req: Request, res: Response): Promise<void> => {
     try {
-        const userId = '67f27133e1a99ed123dc1a36';    //(req as any).userId
+        const userId = '67f2865993414f5c29fbd6d8';    //(req as any).userId
 
         const userDetails = await UserDetails.findOne({ user: userId })
             .populate('loans.loanApplication')
