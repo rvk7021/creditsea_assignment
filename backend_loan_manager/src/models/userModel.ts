@@ -26,7 +26,7 @@ const UserDetailsSchema: Schema<IUserDetails> = new Schema(
         user: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
         contactNumber: { type: String, required: true },
         address: { type: String, required: true },
-        assignedOfficer: { type: Schema.Types.ObjectId, ref: 'User' },
+        assignedOfficer: { type: Schema.Types.ObjectId, ref: 'OfficerDetails' },
 
         loans: [
             {
