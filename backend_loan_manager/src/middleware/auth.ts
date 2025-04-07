@@ -11,8 +11,8 @@ export const authenticateUser = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const token = req.cookies?.token;
-
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
   if (!token) {
     res.status(401).json({ message: 'Unauthorized: No token found' });
     return;
@@ -24,7 +24,6 @@ export const authenticateUser = async (
       role: string;
       userId: string;
     };
-
     const { email, role } = decoded;
     let userDataId;
     switch (role) {
@@ -34,6 +33,7 @@ export const authenticateUser = async (
           res.status(404).json({ message: 'UserDetails not found' });
           return;
         }
+        console.log('UserDetails found:', userDetails);
         userDataId = userDetails._id;
         break;
       }
@@ -43,6 +43,7 @@ export const authenticateUser = async (
           res.status(404).json({ message: 'OfficerDetails not found' });
           return;
         }
+        // console.log('OfficerDetails found:', officer);
         userDataId = officer._id;
         break;
       }

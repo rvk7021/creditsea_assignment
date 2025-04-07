@@ -57,7 +57,6 @@ const updateOfficerMetrics = async (req: Request, res: Response): Promise<void> 
                 'metrics.repaidApplications': repaidApplications,
             },
         });
-
         res.status(200).json({
             message: 'Officer metrics updated successfully',
             metrics: {

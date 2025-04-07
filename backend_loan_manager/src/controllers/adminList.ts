@@ -61,7 +61,6 @@ export const getAllLoanApplications = async (req: Request, res: Response): Promi
     }
 };
 
-
 export const getMetrics = async (req: Request, res: Response): Promise<void> => {
     const userId = (req as any).user.userId;
     const checkAdmin = await Admin.findById(userId);
@@ -107,4 +106,123 @@ export const getMetrics = async (req: Request, res: Response): Promise<void> => 
             totalBorrowers
         }
     });
+}
+
+export const getAdminList = async (req: Request, res: Response): Promise<void> => {
+    const userId = (req as any).user.userId;
+    const checkAdmin = await Admin.findById(userId);
+    if (!checkAdmin) {
+        res.status(403).json({ message: "Unauthorized access" });
+        return;
+    }
+    try {
+        const admins = await Admin.find(); 
+        if (!admins || admins.length === 0) {
+            res.status(404).json({ message: "No admins found" });
+            return;
+        }
+        const filteredAdmins = admins.filter(admin => admin.id !== userId);
+        if (filteredAdmins.length === 0) {
+            res.status(404).json({ message: "No other admins found" });
+            return;
+        }
+        const Newadmins = filteredAdmins;
+        res.status(200).json({
+            message: "All admins fetched successfully",
+            Newadmins
+        });
+    } catch (error) {
+        console.error("Error fetching admins:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export const removeAdmin = async (req: Request, res: Response): Promise<void> => {
+    const userId = (req as any).user.userId;
+    const checkAdmin = await Admin.findById(userId);
+    if (!checkAdmin) {
+        res.status(403).json({ message: "Unauthorized access" });
+        return;
+    }
+    const adminId = req.params.adminId; // Assuming adminId is passed in the request body
+    try {
+        const admin = await Admin.findByIdAndDelete(adminId);
+        if (!admin) {
+            res.status(404).json({ message: "Admin not found" });
+            return;
+        }
+        res.status(200).json({
+            message: "Admin deleted successfully",
+            admin
+        });
+    } catch (error) {
+        console.error("Error deleting admin:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export const approveReject =async (req: Request, res: Response): Promise<void> => {
+    const {applicationId, action} = req.body;
+    if(!applicationId || !action) {
+        res.status(400).json({ message: "Missing required fields (applicationId, action)." });
+        return;
+    }
+    if(action !== 'approved' && action !== 'rejected') {
+        res.status(400).json({ message: "Invalid action. Use 'approved' or 'rejected'." });
+        return;
+    }
+    try {
+        const application = await LoanApplication.findById(applicationId);
+        if (!application) {
+            res.status(404).json({ message: "Loan application not found" });
+            return;
+        }
+        application.status = action;
+        if (action === 'approved') {
+            application.loanAmount = application.loanAmount;
+        } else if (action === 'rejected') {
+            application.loanAmount = 0;
+        }
+        await application.save();
+        const user = await UserDetails.findOne({ user: application.user });
+        if (!user) {
+            res.status(404).json({ message: 'User not found for this loan application.' });
+            return;
+        }
+        const loanIndex = user.loans.findIndex(
+            (loan) => loan.loanApplication && loan.loanApplication.toString() === applicationId.toString()
+        );
+
+        if (loanIndex !== -1) {
+            const loanToUpdate = user.loans[loanIndex];
+
+            if (!loanToUpdate.loanApplication) {
+                console.error('LoanApplication is missing!');
+                return;  
+            }
+
+            user.loans[loanIndex] = {
+                ...loanToUpdate,
+                status: action,
+                remainingAmount: loanToUpdate.remainingAmount,
+                dueDate: loanToUpdate.dueDate,
+                amount: loanToUpdate.amount,
+                loanApplication: loanToUpdate.loanApplication
+            };
+
+            await user.save();
+        } else {
+            console.log('Loan not found');
+        }
+
+        res.status(200).json({
+            message: "Loan application updated successfully",
+            application
+        });
+        
+    } catch (error) {
+        console.error("Error approving/rejecting loan application:", error);
+        res.status(500).json({ message: "Internal server error" });
+        
+    }
 }

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/user';
+import cookieParser from 'cookie-parser';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'defaultsecretkey';
 
@@ -36,23 +37,16 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             { expiresIn: '2h' }
         );
 
-        // Set token in cookie
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 2 * 60 * 60 * 1000, // 2 hours
-            sameSite: 'strict'
-        });
-
-        res.status(200).json({
-            message: 'Login successful',
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }
-        });
+        res
+        .cookie('token', token, {
+          httpOnly: true,
+          secure: false, // set to true in production with HTTPS
+          sameSite: 'lax', // or 'None' with secure: true
+          maxAge: 2 * 60 * 60 * 25*1000, // 2 hours
+        })
+        .status(200)
+        .json({ message: 'Login successful' ,token});
+      
     } catch (error: any) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'Internal server error', error: error?.message || error });

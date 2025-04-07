@@ -5,7 +5,7 @@ import { getTransactions, getDeposits, getLoanApplications } from '../controller
 import { createOfficerProfile } from '../controllers/verifierSignUp';
 import { updateOfficerMetrics, approveOrRejectLoan ,getLoanApplicationsList} from '../controllers/officerFunction';
 import { signupAdmin } from '../controllers/adminSignUp';
-import { getAllUsers, getAllOfficers, getAllLoanApplications, getMetrics } from '../controllers/adminList';
+import { getAllUsers, getAllOfficers, getAllLoanApplications, getMetrics,getAdminList ,removeAdmin,approveReject} from '../controllers/adminList';
 import { loginUser } from '../controllers/login';
 import { authenticateUser } from '../middleware/auth';
 const router = express.Router();
@@ -30,6 +30,10 @@ router.get('/admin/users', authenticateUser,getAllUsers);
 router.get('/admin/officers', authenticateUser,getAllOfficers);
 router.get('/admin/loan-applications',authenticateUser, getAllLoanApplications);
 router.get('/admin/metrics',authenticateUser, getMetrics);
+router.get('/admin/admin',authenticateUser,getAdminList)
+router.delete('/admin/:adminId', authenticateUser, removeAdmin);
+router.post('/admin/approve-reject', authenticateUser, approveReject);
+
 export default router;
 
 

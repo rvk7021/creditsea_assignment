@@ -73,7 +73,7 @@ export const getLoanApplications = async (req: Request, res: Response): Promise<
             remainingAmount: loan.remainingAmount,
             officerName
         }));
-
+        
         res.status(200).json({
             message: 'Loan applications with officer name fetched successfully',
             loans: loansWithOfficer
